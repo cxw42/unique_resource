@@ -92,18 +92,14 @@ public:
   }
   // resource access
   R const &get() const noexcept { return this->resource; }
-  operator R const &() const noexcept { std::cout << "opR&"<<std::endl; return this->resource; }
-  R operator->() const noexcept { std::cout << "op->"<<std::endl; return this->resource; }
+  operator R const &() const noexcept { return this->resource; }
+  R operator->() const noexcept { return this->resource; }
   typename std::add_lvalue_reference<
       typename std::remove_pointer<R>::type>::type
   operator*() const {
-    std::cout << "op* " << *this->resource << std::endl;
     return *this->resource;
   }
-  explicit operator bool() const noexcept { return this->execute_on_destruction; }
-  bool valid() const noexcept { // true if currently holds a value
-    return this->execute_on_destruction;
-  }
+  bool valid() const noexcept { return this->execute_on_destruction; }
   // deleter access
   const D &get_deleter() const noexcept { return this->deleter; }
 };
