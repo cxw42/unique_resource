@@ -50,6 +50,11 @@ public:
       : resource(std::move(resource_)),
         deleter(D{}),
         execute_on_destruction{true} {}
+  explicit unique_resource()
+      : resource{},
+        deleter(D{}),
+        execute_on_destruction{false} {}
+
   // move
   unique_resource(unique_resource &&other) noexcept
       : resource(std::move(other.resource)),

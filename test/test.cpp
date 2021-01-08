@@ -135,6 +135,14 @@ void test_default_deleter() {
   assert("cleaned 42" == default_deleter_stream.str());
 }
 
+void test_default_ctor() {
+  default_deleter_stream.str("");
+  {
+    int_resource cleanup;
+  }
+  assert("" == default_deleter_stream.str());
+}
+
 int main(int /* argc */, char *argv[]) {
   std::cout << argv[0] << " running tests" << std::endl;
   test_semantics();
@@ -152,6 +160,7 @@ int main(int /* argc */, char *argv[]) {
 #endif
   test_noexcept_deleter();
   test_default_deleter();
+  test_default_ctor();
   std::cout << argv[0] << " tests have passed" << std::endl;
   return 0;
 }
