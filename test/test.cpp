@@ -114,6 +114,27 @@ void test_noexcept_deleter() {
   //auto cleanup = std_experimental::make_unique_resource(42, &thrower);
   //will terminate if run....
 }
+
+std::ostringstream default_deleter_stream;
+
+struct report_int_deleter {
+  void operator()(int i) const
+  {
+    default_deleter_stream << "cleaned " << i;
+  }
+};
+
+
+using int_resource = std_experimental::unique_resource<int, report_int_deleter>;
+void test_default_deleter() {
+  default_deleter_stream.str("");
+  {
+    int_resource cleanup{42};
+    assert(42 == cleanup.get());
+  }
+  assert("cleaned 42" == default_deleter_stream.str());
+}
+
 int main(int /* argc */, char *argv[]) {
   std::cout << argv[0] << " running tests" << std::endl;
   test_semantics();
@@ -130,6 +151,7 @@ int main(int /* argc */, char *argv[]) {
   test_unique_resource_can_be_moved();
 #endif
   test_noexcept_deleter();
+  test_default_deleter();
   std::cout << argv[0] << " tests have passed" << std::endl;
   return 0;
 }
