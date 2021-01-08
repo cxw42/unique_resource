@@ -143,6 +143,53 @@ void test_default_ctor() {
   assert("" == default_deleter_stream.str());
 }
 
+template<typename R>
+void check(R* r, bool desired) {
+  if(desired) {
+    std::cout << "checking for pointer truthy" << std::endl;
+    assert(*r);
+  } else {
+    std::cout << "checking for pointer falsy" << std::endl;
+    assert(!*r);
+  }
+}
+
+void check(bool r, bool desired) {
+  if(desired) {
+    std::cout << "checking for bool truthy" << std::endl;
+    assert(r);
+  } else {
+    std::cout << "checking for bool falsy" << std::endl;
+    assert(!r);
+  }
+}
+
+void test_valid() {
+  std::cout << __func__ << " enter" << std::endl;
+  default_deleter_stream.str("");
+  {
+    int_resource cleanup;
+    check(cleanup.valid(), false);
+  }
+  assert("" == default_deleter_stream.str());
+
+  default_deleter_stream.str("");
+  {
+    int_resource cleanup{1337};
+    check(cleanup.valid(), true);
+  }
+  assert("cleaned 1337" == default_deleter_stream.str());
+
+  default_deleter_stream.str("");
+  {
+    int_resource cleanup{1337};
+    cleanup.reset();
+    check(cleanup.valid(), false);
+  }
+  assert("cleaned 1337" == default_deleter_stream.str());
+  std::cout << __func__ << " exit" << std::endl;
+}
+
 int main(int /* argc */, char *argv[]) {
   std::cout << argv[0] << " running tests" << std::endl;
   test_semantics();
@@ -161,6 +208,7 @@ int main(int /* argc */, char *argv[]) {
   test_noexcept_deleter();
   test_default_deleter();
   test_default_ctor();
+  test_valid();
   std::cout << argv[0] << " tests have passed" << std::endl;
   return 0;
 }

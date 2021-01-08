@@ -36,7 +36,7 @@ std::unique_ptr<T> make_unique( Args&& ...args )
 template <typename R, typename D> class unique_resource {
   R resource;
   D deleter;
-  bool execute_on_destruction; // exposition only
+  bool execute_on_destruction;
   unique_resource &operator=(unique_resource const &) = delete;
   unique_resource(unique_resource const &) = delete; // no copies!
 public:
@@ -92,12 +92,17 @@ public:
   }
   // resource access
   R const &get() const noexcept { return this->resource; }
-  operator R const &() const noexcept { return this->resource; }
-  R operator->() const noexcept { return this->resource; }
+  operator R const &() const noexcept { std::cout << "opR&"<<std::endl; return this->resource; }
+  R operator->() const noexcept { std::cout << "op->"<<std::endl; return this->resource; }
   typename std::add_lvalue_reference<
       typename std::remove_pointer<R>::type>::type
   operator*() const {
+    std::cout << "op* " << *this->resource << std::endl;
     return *this->resource;
+  }
+  explicit operator bool() const noexcept { return this->execute_on_destruction; }
+  bool valid() const noexcept { // true if currently holds a value
+    return this->execute_on_destruction;
   }
   // deleter access
   const D &get_deleter() const noexcept { return this->deleter; }
